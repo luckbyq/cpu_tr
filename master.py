@@ -27,9 +27,13 @@ def pid_info():
             pid,cpu,rss = re.split(' +|\t|\n|', i.strip())
             mem = int(rss) / 1024
             cpu = int(float(cpu))
-            if cpu > 60:
-                host_status.op(ip,'increase',pid,JAVABIN,cpu,'%sMB' % mem)
-            else:
-                host_status.op(ip,'reduce',pid,JAVABIN,cpu,'%sMB' % mem)
+            pro = run("ps aux|grep %s|grep -v grep|grep -v agent|grep .jar|grep java")
+            if len(pro) > 20:
+                protype = "jar"
+            if protype == 'jar':
+                if cpu > 60:
+                    host_status.op(ip,'increase',pid,JAVABIN,cpu,'%sMB' % mem)
+                else:
+                    host_status.op(ip,'reduce',pid,JAVABIN,cpu,'%sMB' % mem)
         except:
             pass
