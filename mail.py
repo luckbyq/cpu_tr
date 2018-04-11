@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-import smtplib,urllib2,time,datetime
+import smtplib,urllib2,time,datetime,sms
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
@@ -11,15 +11,43 @@ SMTPserver = 'smtp.mxhichina.com'
 SMTPport = 25
 sender = 'yaqi.bian@xqchuxing.com'
 password = "Bianyaqi123456"
-to = 'yaqi.bian@xqchuxing.com'
+#to = 'yaqi.bian@xqchuxing.com'
 
+#将收件人从字典格式化为list，方便邮件模块群发使用。
+mailto = {
+    'bianyaqi' : 'yaqi.bian@xqchuxing.com',
+    'yangbo' : 'bo.yang@xqchuxing.com'
+}
+touser = []
+for key in mailto:
+    touser.append(mailto[key])
+
+#格式化短信收件人为str，中间以逗号分隔。
+smsuser = {
+    'bianyaqi' : '18016213363',
+    'yangbo' : '15900507183'
+}
+tosms = ''
+for key in smsuser:
+    if len(tosms) > 1:
+        tosms = tosms + ',' + smsuser[key]
+    else:
+        tosms = tosms + smsuser[key]
+
+def postsms(content):
+    sms.post(content,tosms)
+
+
+#主工作模块，发送邮件使用。
 def mail(subject,message,enclosure):
     nowTime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     #初始化根模块，定义为msg。
     msg = MIMEMultipart()
     msg['From'] = sender
-    msg['To'] = to
+
+    #多人群发时，直接在邮件发送代码中使用list即可。
+    #msg['To'] = touser
     msg['Subject'] = subject
 
     #定义附件。
@@ -32,11 +60,11 @@ def mail(subject,message,enclosure):
     msg.attach(text)
     msg.attach((filepart))
 
-    #发送邮件。
+    #发送邮件。touser为多人邮件中的list。
     try:
         mailserver = smtplib.SMTP(SMTPserver, SMTPport)
         mailserver.login(sender, password)
-        mailserver.sendmail(sender, to, msg.as_string())
+        mailserver.sendmail(sender, touser, msg.as_string())
         mailserver.quit()
     except smtplib.SMTPRecipientsRefused:
         print 'Recipient refused'
@@ -50,4 +78,5 @@ def mail(subject,message,enclosure):
         print "Sed mail Success!    %s" % nowTime
 
 
-mail(subject = "This is a test subject for byq.", message = "if success.", enclosure = "E:\\test.txt")
+#mail(subject = "This is a test subject for byq.", message = "if success.", enclosure = "E:\\test.txt")
+postsms('This is the test message')

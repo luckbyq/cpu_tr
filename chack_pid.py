@@ -33,14 +33,14 @@ def problem(IP,PID,CPU,RSS,JAVA):
     commands.getoutput("echo '####################################################################################\n' >> /tmp/%s.txt" % IP)
     commands.getoutput("ssh %s@%s %sjstack -l %s >> /tmp/%s.txt" % (user,IP,JAVA,PID,IP))
 
-    mail.mail('%s  %s is to high' % (IP,proname) , 'HOST:%s   PROJECT:%s    CPU:%s%%   MEM:%s' % (IP,proname,CPU,RSS) , '/tmp/%s.txt' % IP)
-
+    mail.mail('%s  %s is to high' % (IP,proname) , 'HOST:%s   PROJECT:%s    CPU:%s%%   MEM:%s \n\n Please see your E-mail \n' % (IP,proname,CPU,RSS) , '/tmp/%s.txt' % IP)
+    mail.postsms('%s  %s is to high,Please see your E-mail' % (IP,proname))
 #当已经报警过的进程状态恢复正常时，则发送恢复正常的邮件。
 def ok(IP,PID):
     proname = process(IP, PID)
     commands.getoutput("touch /tmp/The_project_is_ok")
     mail.mail('%s  %s is OK!!' % (IP, proname),'HOST:%s   PROJECT:%s ' % (IP, proname), '/tmp/The_project_is_ok')
-
+    mail.postsms('%s  %s is OK!!!!' % (IP, proname))
 
 #测试部分
 # IP = sys.argv[1]
