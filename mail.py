@@ -6,28 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 
-#定义邮箱基本信息。
-SMTPserver = 'smtp.mxhichina.com'
-SMTPport = 25
-sender = 'yaqi.bian@xqchuxing.com'
-password = "Bianyaqi123456"
-#to = 'yaqi.bian@xqchuxing.com'
 
-#将收件人从字典格式化为list，方便邮件模块群发使用。
-mailto = {
-    'bianyaqi' : 'yaqi.bian@xqchuxing.com',
-    'yangbo' : 'bo.yang@xqchuxing.com',
-    'zhouyuqiang' : 'yuqiang.zhou@xqchuxing.com',
-}
-touser = []
-for key in mailto:
-    touser.append(mailto[key])
-
-#格式化短信收件人为str，中间以逗号分隔。
-smsuser = {
-    'bianyaqi' : '18016213363',
-    'yangbo' : '15900507183'
-}
 tosms = ''
 for key in smsuser:
     if len(tosms) > 1:
