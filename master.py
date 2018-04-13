@@ -28,12 +28,18 @@ def pid_info():
             mem = int(rss) / 1024
             cpu = int(float(cpu))
             pro = run("ps aux|grep %s|grep -v grep|grep -v agent|grep .jar|grep java")
-            if len(pro) > 20:
-                protype = "jar"
-            if protype == 'jar':
-                if cpu > 60:
-                    host_status.op(ip,'increase',pid,JAVABIN,cpu,'%sMB' % mem)
-                else:
-                    host_status.op(ip,'reduce',pid,JAVABIN,cpu,'%sMB' % mem)
+
+            #判断项目是否为jar
+            # if len(pro) > 20:
+            #     protype = "jar"
+            # else:
+            #     protype = 'normal'
+
+            protype = 'jar'
+            #判断进程的动作。传值时带入项目类型。
+            if cpu > 60:
+                host_status.op(ip,'increase',pid,JAVABIN,cpu,'%sMB' % mem , protype)
+            else:
+                host_status.op(ip,'reduce',pid,JAVABIN,cpu,'%sMB' % mem , protype)
         except:
             pass

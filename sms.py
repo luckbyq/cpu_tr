@@ -16,3 +16,5 @@ def post(content, tos):
     response = opener.open(req)
     return response.read()
 
+if __name__ == "__main__":
+    pass

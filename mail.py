@@ -16,7 +16,8 @@ password = "Bianyaqi123456"
 #将收件人从字典格式化为list，方便邮件模块群发使用。
 mailto = {
     'bianyaqi' : 'yaqi.bian@xqchuxing.com',
-    'yangbo' : 'bo.yang@xqchuxing.com'
+    'yangbo' : 'bo.yang@xqchuxing.com',
+    'zhouyuqiang' : 'yuqiang.zhou@xqchuxing.com',
 }
 touser = []
 for key in mailto:
@@ -77,6 +78,7 @@ def mail(subject,message,enclosure):
     else:
         print "Sed mail Success!    %s" % nowTime
 
-
-#mail(subject = "This is a test subject for byq.", message = "if success.", enclosure = "E:\\test.txt")
-postsms('This is the test message')
+if __name__ == "__main__":
+    # mail(subject = "This is a test subject for byq.", message = "if success.", enclosure = "E:\\test.txt")
+    # postsms('This is the test message')
+    pass

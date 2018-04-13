@@ -9,14 +9,20 @@ def process(IP,PID):
     tmpcmd = commands.getoutput('ssh %s ps aux|grep %s|grep -v grep' % (IP,PID))
     cmd = tmpcmd.split('.jar')[0].split('/')[-1]
     return cmd
-    pass
+
+def normalprocess(IP,PID):
+    tmpcmd = commands.getoutput('ssh %s ps aux|grep %s|grep -v grep' % (IP, PID))
+    cmd = re.split(' +|\t', tmpcmd.strip())
+    cmd = cmd[10:]
+    cmd = ' '.join(cmd)
+    return cmd
 
 #工作模块，先初始化报警附件文件。然后往文本中写入jar进程的占用CPU过高的   线程堆栈  GC内存情况，及heap dump文件。
 def problem(IP,PID,CPU,RSS,JAVA):
     commands.getoutput("rm -f /tmp/%s.txt" % IP)
     proname = process(IP,PID)
     user = commands.getoutput("ssh %s ps aux|grep %s|grep -v grep|awk '{print $1}'" % (IP,PID))
-    tid16 = commands.getoutput("ssh %s ps -mp %s -o THREAD,tid | tail -n +2 | sort -n -k2 | head -n -1 | tail -n -1|awk '{print $8}'|xargs printf %%x\\n" % (IP,PID))
+    tid16 = commands.getoutput("ssh %s ps -mp %s -o THREAD,tid | tail -n +2 | sort -n -k2 | head -n -1 | tail -n -1|awk '{print $8}'|xargs printf %%x" % (IP,PID))
 
     commands.getoutput("echo '####################################################################################\n' >> /tmp/%s.txt" % IP)
     commands.getoutput("echo '#########################    Thread stack information    ###########################\n' >> /tmp/%s.txt" % IP)
@@ -42,10 +48,27 @@ def ok(IP,PID):
     mail.mail('%s  %s is OK!!' % (IP, proname),'HOST:%s   PROJECT:%s ' % (IP, proname), '/tmp/The_project_is_ok')
     mail.postsms('%s  %s is OK!!!!' % (IP, proname))
 
+def normalproblem(IP,PID,CPU,RSS):
+    commands.getoutput("rm -f /tmp/%s.txt" % IP)
+    commands.getoutput("touch /tmp/%s.txt" % IP)
+    proname = normalprocess(IP,PID)
+    mail.mail('%s  CPU is to high' % IP,'HOST:%s   PROJECT:%s    CPU:%s%%   MEM:%s \n\n Please see your E-mail \n' % (IP, proname, CPU, RSS),'/tmp/%s.txt' % IP)
+    mail.postsms('%s  CPU is to high,Please see your E-mail' % (IP))
+
+def nomalok(IP,PID):
+    proname = normalprocess(IP, PID)
+    commands.getoutput("touch /tmp/The_project_is_ok")
+    mail.mail('%s  CPU is OK!!' % (IP),'HOST:%s   PROJECT:%s ' % (IP, proname), '/tmp/The_project_is_ok')
+    mail.postsms('%s  CPU is OK!!!!' % (IP))
+
 #测试部分
-# IP = sys.argv[1]
-# PID = sys.argv[2]
-# CPU = sys.argv[3]
-# RSS = sys.argv[4]
-# JAVA = sys.argv[5]
-# problem(IP,PID,CPU,RSS,JAVA)
+if __name__ == "__main__":
+    IP = sys.argv[1]
+    PID = sys.argv[2]
+    CPU = sys.argv[3]
+    RSS = sys.argv[4]
+    JAVA = sys.argv[5]
+    problem(IP, PID, CPU, RSS, JAVA)
+
+
+
